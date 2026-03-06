@@ -55,7 +55,7 @@ Nginx Proxy Manager
 Public host example:
 
 ```text
-mail.feuerwehren-birkenau.de
+mail.ucs-project.de
 ```
 
 NPM should proxy to the SOGo host on `${SOGO_HTTP_PORT}`.
