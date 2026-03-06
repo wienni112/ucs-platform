@@ -1,6 +1,6 @@
 services:
   sogo:
-    image: ghcr.io/your-org/sogo:latest
+    image: ghcr.io/wienni112/sogo:latest
     container_name: sogo
     restart: unless-stopped
     env_file:
