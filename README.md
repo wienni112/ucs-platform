@@ -1,68 +1,139 @@
-# ucs-sogo-installer
+# UCS Platform – SOGo Installer
 
-Starter repository for running **SOGo** in Docker while reusing:
+Docker-based SOGo groupware setup for UCS environments using existing infrastructure for authentication and mail services.
 
-- **UCS** for LDAP / user management
-- **UCS mail server** for IMAP / SMTP
-- **Keycloak** for web SSO later
-- **Nginx Proxy Manager** as reverse proxy
-- optionally **Proxmox Mail Gateway** in front of UCS mail
+This project provides a simple way to run **SOGo as a groupware frontend** while reusing:
 
-## Scope
+* UCS for LDAP and user management
+* UCS Mail Server for IMAP and SMTP
+* optional Keycloak for SSO
+* Nginx Proxy Manager as reverse proxy
+* optional Proxmox Mail Gateway for spam filtering
 
-This repository is intentionally focused on **SOGo as webmail and groupware frontend**.
-It does **not** build a full mail stack in Docker, because the target architecture is:
+---
 
-```text
-Internet -> Proxmox Mail Gateway -> UCS Mail -> SOGo
+# Architecture
+
+The intended architecture separates responsibilities between infrastructure components.
+
 ```
-
-## Planned architecture
-
-```text
-UCS
-├── LDAP / AD
-├── Mail server (IMAP / SMTP)
-└── Keycloak
-
-Docker host
-└── SOGo
-
+Internet
+   ↓
+Proxmox Mail Gateway (optional)
+   ↓
+UCS Mail Server
+   ↓
+SOGo (Docker)
+   ↓
 Nginx Proxy Manager
-└── mail.example.org -> SOGo
 ```
 
-## Quick start
+### Component Responsibilities
 
-1. Copy `.env.example` to `.env`
-2. Adjust LDAP, IMAP, SMTP and database values
-3. Review `config/sogo/sogo.conf`
-4. Run:
+| Component            | Responsibility                                     |
+| -------------------- | -------------------------------------------------- |
+| Proxmox Mail Gateway | Spam filtering and mail security                   |
+| UCS Mail Server      | Mail delivery via IMAP / SMTP                      |
+| UCS LDAP             | User and group management                          |
+| SOGo                 | Webmail, calendar, contacts and groupware frontend |
+| Nginx Proxy Manager  | Reverse proxy and TLS termination                  |
+| Keycloak (optional)  | Single Sign-On                                     |
+
+This repository intentionally **does not provide a full mail stack**, but focuses on running SOGo as the frontend for an existing UCS environment.
+
+---
+
+# Features
+
+* Docker-based deployment
+* Integration with UCS LDAP
+* Uses UCS mail infrastructure
+* Optional Keycloak SSO
+* Compatible with Nginx Proxy Manager
+* Optional Proxmox Mail Gateway support
+* Simple installation scripts
+
+---
+
+# Requirements
+
+The following components must already exist:
+
+* UCS Domain Controller
+* UCS Mail Server (IMAP + SMTP)
+* Docker
+* Docker Compose
+* Reverse proxy (recommended: Nginx Proxy Manager)
+
+Optional:
+
+* Proxmox Mail Gateway
+* Keycloak
+
+---
+
+# Installation
+
+Clone the repository:
+
+```bash
+git clone https://github.com/wienni112/ucs-platform.git
+cd ucs-platform/sogo
+```
+
+Create environment configuration:
+
+```bash
+cp .env.example .env
+```
+
+Edit the configuration:
+
+```bash
+nano .env
+```
+
+Install and start SOGo:
 
 ```bash
 ./scripts/install.sh
 ```
 
-## Notes
+Verify installation:
 
-- `config/sogo/sogo.conf` is a template and still needs real values or rendering.
-- For production, pin image tags instead of `latest`.
-- Add a dedicated database service or connect to an existing PostgreSQL / MariaDB host.
-- For Keycloak SSO, add a dedicated documentation / import script later.
-
-## Reverse proxy example
-
-Public host example:
-
-```text
-mail.ucs-project.de
+```bash
+./scripts/healthcheck.sh
 ```
 
-NPM should proxy to the SOGo host on `${SOGO_HTTP_PORT}`.
+---
 
-Recommended upstream headers:
+# Environment Configuration
 
-```nginx
+Example `.env` configuration:
+
+```env
+SOGO_DOMAIN=mail.example.com
+
+LDAP_HOST=ucs.example.local
+LDAP_BASE=dc=example,dc=local
+LDAP_BIND_DN=uid=sogo,cn=users,dc=example,dc=local
+LDAP_PASSWORD=secret
+
+IMAP_HOST=ucs.example.local
+SMTP_HOST=ucs.example.local
+```
+
+---
+
+# Reverse Proxy Configuration
+
+Example for **Nginx Proxy Manager**
+
+Forward traffic to the SOGo container.
+
+Recommended headers:
+
+```
 proxy_set_header Host $host;
 proxy_set_header X-Real-IP $remote_addr;
 proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
@@ -70,6 +141,97 @@ proxy_set_header X-Forwarded-Proto https;
 proxy_set_header X-Forwarded-Port 443;
 ```
 
-## License
+---
 
-Pick a license before publishing. For this kind of infra repo, `MIT` or `Apache-2.0` are usually good choices.
+# Updating
+
+Update the containers with:
+
+```bash
+./scripts/update.sh
+```
+
+---
+
+# Backup
+
+Create a backup with:
+
+```bash
+./scripts/backup.sh
+```
+
+Backups include:
+
+* configuration
+* environment variables
+* database dump
+
+---
+
+# Health Check
+
+Verify container and service status:
+
+```bash
+./scripts/healthcheck.sh
+```
+
+---
+
+# Repository Structure
+
+```
+ucs-platform
+├── docs
+├── scripts
+├── sogo
+│   ├── docker-compose.yml
+│   ├── config
+│   └── README.md
+├── LICENSE
+└── README.md
+```
+
+---
+
+# Scope
+
+This project focuses on running **SOGo as webmail and groupware frontend**.
+
+It does **not replace UCS mail services**.
+
+Mail delivery, authentication and spam filtering remain handled by the UCS infrastructure.
+
+---
+
+# Future Features
+
+Planned improvements include:
+
+* Keycloak SSO integration
+* automated Docker image builds
+* UCS App Center integration
+* improved installation scripts
+* deployment automation
+
+---
+
+# License
+
+This project is licensed under the **MIT License**.
+
+---
+
+# Contributing
+
+Contributions are welcome.
+
+If you find a bug or want to propose a feature, please open an issue.
+
+---
+
+# Author
+
+David Wieninger
+https://github.com/wienni112
