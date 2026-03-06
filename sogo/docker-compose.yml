@@ -1,0 +1,23 @@
+services:
+  sogo:
+    image: ghcr.io/your-org/sogo:latest
+    container_name: sogo
+    restart: unless-stopped
+    env_file:
+      - .env
+    ports:
+      - "${SOGO_BIND_IP:-127.0.0.1}:${SOGO_HTTP_PORT:-20000}:20000"
+    volumes:
+      - ./config/sogo/sogo.conf:/etc/sogo/sogo.conf:ro
+      - sogo-data:/var/lib/sogo
+      - sogo-log:/var/log/sogo
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://127.0.0.1:20000/SOGo/"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+
+volumes:
+  sogo-data:
+  sogo-log:
