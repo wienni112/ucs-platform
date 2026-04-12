@@ -1,23 +1,43 @@
+version: "3.9"
+
 services:
   sogo:
-    image: inverse/sogo:latest
+    image: ghcr.io/sonroyaalmerol/docker-sogo:5.12.2
     container_name: sogo
     restart: unless-stopped
+    depends_on:
+      - db
+      - memcached
+    ports:
+      - "${SOGO_HTTP_BIND:-127.0.0.1}:${SOGO_HTTP_PORT:-20000}:20000"
     env_file:
       - .env
-    ports:
-      - "${SOGO_BIND_IP:-127.0.0.1}:${SOGO_HTTP_PORT:-20000}:20000"
     volumes:
-      - ./config/sogo/sogo.conf:/etc/sogo/sogo.conf:ro
-      - sogo-data:/var/lib/sogo
-      - sogo-log:/var/log/sogo
-    healthcheck:
-      test: ["CMD", "curl", "-fsS", "http://127.0.0.1:20000/SOGo/"]
-      interval: 30s
-      timeout: 10s
-      retries: 5
-      start_period: 30s
+      - ./generated/sogo.conf:/etc/sogo/sogo.conf:ro
+      - ./certs:/etc/sogo/certs:ro
+      - ./saml:/etc/sogo/saml:ro
+      - ./logs:/var/log/sogo
+    environment:
+      TZ: "${TZ:-Europe/Berlin}"
 
-volumes:
-  sogo-data:
-  sogo-log:
+  db:
+    image: mariadb:11.4
+    container_name: sogo-db
+    restart: unless-stopped
+    command:
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
+    env_file:
+      - .env
+    environment:
+      MYSQL_ROOT_PASSWORD: "${SOGO_DB_ROOT_PASSWORD}"
+      MYSQL_DATABASE: "${SOGO_DB_NAME}"
+      MYSQL_USER: "${SOGO_DB_USER}"
+      MYSQL_PASSWORD: "${SOGO_DB_PASSWORD}"
+    volumes:
+      - ./db:/var/lib/mysql
+
+  memcached:
+    image: memcached:1.6.39
+    container_name: sogo-memcached
+    restart: unless-stopped
