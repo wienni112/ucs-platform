@@ -1,0 +1,67 @@
+{
+  WOWorkersCount = ${SOGO_WORKERS};
+  WOPort = ${SOGO_HTTP_PORT};
+  WOListenQueueSize = 5;
+
+  SOGoTimeZone = "${SOGO_TIMEZONE}";
+  SOGoLanguage = "${SOGO_LANGUAGE}";
+  SOGoPageTitle = "${SOGO_PAGE_TITLE}";
+  SOGoMailDomain = "${SOGO_MAIL_DOMAIN}";
+
+  SOGoProfileURL = "${SOGO_DB_ENGINE}://${SOGO_DB_USER}:${SOGO_DB_PASSWORD}@${SOGO_DB_HOST}:${SOGO_DB_PORT}/${SOGO_DB_NAME}/sogo_user_profile";
+  OCSFolderInfoURL = "${SOGO_DB_ENGINE}://${SOGO_DB_USER}:${SOGO_DB_PASSWORD}@${SOGO_DB_HOST}:${SOGO_DB_PORT}/${SOGO_DB_NAME}/sogo_folder_info";
+  OCSSessionsFolderURL = "${SOGO_DB_ENGINE}://${SOGO_DB_USER}:${SOGO_DB_PASSWORD}@${SOGO_DB_HOST}:${SOGO_DB_PORT}/${SOGO_DB_NAME}/sogo_sessions_folder";
+  OCSEMailAlarmsFolderURL = "${SOGO_DB_ENGINE}://${SOGO_DB_USER}:${SOGO_DB_PASSWORD}@${SOGO_DB_HOST}:${SOGO_DB_PORT}/${SOGO_DB_NAME}/sogo_alarms_folder";
+  OCSCacheFolderURL = "${SOGO_DB_ENGINE}://${SOGO_DB_USER}:${SOGO_DB_PASSWORD}@${SOGO_DB_HOST}:${SOGO_DB_PORT}/${SOGO_DB_NAME}/sogo_cache_folder";
+
+  SOGoMemcachedHost = "${SOGO_MEMCACHED_HOST}";
+
+  SOGoMailingMechanism = "smtp";
+  SOGoSMTPServer = "smtp://${SMTP_HOST}:${SMTP_PORT}/?tls=${SMTP_TLS}";
+  SOGoSMTPAuthenticationType = ${SMTP_AUTH_TYPE};
+
+  SOGoIMAPServer = "imap://${IMAP_HOST}:${IMAP_PORT}/?tls=${IMAP_TLS}";
+  SOGoSieveServer = "sieve://${SIEVE_HOST}:${SIEVE_PORT}";
+
+  SOGoDraftsFolderName = Drafts;
+  SOGoSentFolderName = Sent;
+  SOGoTrashFolderName = Trash;
+  SOGoJunkFolderName = Junk;
+
+  SOGoAppointmentSendEMailNotifications = YES;
+  SOGoFoldersSendEMailNotifications = NO;
+  SOGoACLsSendEMailNotifications = NO;
+
+  SOGoAuthenticationType = ${SOGO_AUTH_TYPE};
+
+  SOGoUserSources = (
+    {
+      type = ldap;
+      id = public;
+      displayName = "UCS Adressbuch";
+      isAddressBook = YES;
+      canAuthenticate = YES;
+
+      hostname = "ldap://${LDAP_HOST}:${LDAP_PORT}";
+      baseDN = "${LDAP_BASE_DN}";
+      bindDN = "${LDAP_BIND_DN}";
+      bindPassword = "${LDAP_BIND_PASSWORD}";
+
+      UIDFieldName = "${LDAP_UID_FIELD}";
+      IDFieldName = "${LDAP_ID_FIELD}";
+      CNFieldName = "${LDAP_CN_FIELD}";
+      filter = "${LDAP_FILTER}";
+      IMAPHostFieldName = "mailHost";
+    }
+  );
+
+  NGImap4ConnectionStringSeparator = "/";
+  NGImap4AuthMechanism = "";
+
+  SOGoSAML2CertificateLocation = "${SAML_SP_CERT}";
+  SOGoSAML2PrivateKeyLocation = "${SAML_SP_KEY}";
+  SOGoSAML2IdpMetadataLocation = "${SAML_IDP_METADATA}";
+  SOGoSAML2LoginAttribute = "${SAML_LOGIN_ATTRIBUTE}";
+  SOGoSAML2LogoutEnabled = ${SAML_LOGOUT_ENABLED};
+  SOGoSAML2LogoutURL = "${SAML_LOGOUT_URL}";
+}
