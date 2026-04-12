@@ -55,6 +55,23 @@ This repository intentionally **does not provide a full mail stack**, but focuse
 
 ---
 
+## Recommended rollout path
+
+For UCS environments, the recommended implementation order is:
+
+### Phase 1
+- SOGo with UCS LDAP
+- UCS IMAP / SMTP
+- Reverse proxy via Nginx Proxy Manager
+
+### Phase 2
+- Keycloak SAML for web SSO
+- LDAP remains as directory / address book source
+
+This keeps initial troubleshooting simpler and avoids mixing mail, LDAP and SSO issues in the first deployment step.
+
+---
+
 # Requirements
 
 The following components must already exist:
